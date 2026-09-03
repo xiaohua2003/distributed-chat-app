@@ -4,3 +4,18 @@ services:
     container_name: chat-redis
     ports:
       - "6379:6379"
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: chat-postgres
+    environment:
+      POSTGRES_USER: chatuser
+      POSTGRES_PASSWORD: chatpassword
+      POSTGRES_DB: chatdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - chat-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  chat-postgres-data:
