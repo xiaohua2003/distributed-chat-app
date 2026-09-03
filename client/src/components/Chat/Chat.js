@@ -16,8 +16,11 @@ const Chat=({location})=>{
     const ENDPOINT = 'http://localhost:5000';
     
     useEffect(()=>{
-        const {name, room}=queryString.parse(location.search);
-        socket = io(ENDPOINT, {transports: ['websocket', 'polling', 'flashsocket']})
+       const { name, room, server = '5000' } = queryString.parse(
+  location.search
+); 
+        const endpoint = `http://localhost:${server}`;
+        socket = io(endpoint, {transports: ['websocket', 'polling', 'flashsocket']})
         setName(name);
         setRoom(room);
        

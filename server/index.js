@@ -1,3 +1,5 @@
+const { createClient } = require('redis');
+const { createAdapter } = require('@socket.io/redis-adapter');
 const express=require("express");
 const socketio=require('socket.io');
 const http=require('http');
@@ -9,6 +11,19 @@ const router=require('./router')
 const app=express();
 const server=http.createServer(app);
 const io=socketio(server);
+const pubClient = createClient({
+  url: 'redis://localhost:6379',
+});
+
+const subClient = pubClient.duplicate();
+
+pubClient.on('error', (err) => {
+  console.error('Redis publisher error:', err);
+});
+
+subClient.on('error', (err) => {
+  console.error('Redis subscriber error:', err);
+});
 app.use(cors());
 
 io.on('connection', (socket)=>{
@@ -39,6 +54,21 @@ socket.on('disconnect', ()=>{
 });
 
 app.use(router);
-server.listen(PORT, function(){console.log(`server is running on port ${PORT}`)}
+const startServer = async () => {
+  await Promise.all([
+    pubClient.connect(),
+    subClient.connect(),
+  ]);
 
-)
+  io.adapter(createAdapter(pubClient, subClient));
+
+  server.listen(PORT, () => {
+    console.log(`server is running on port ${PORT}`);
+    console.log('connected to Redis');
+  });
+};
+
+startServer().catch((err) => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
+});
