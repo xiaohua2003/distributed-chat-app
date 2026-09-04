@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  host: 'localhost',
+  host: process.env.POSTGRES_HOST || 'localhost', 
   port: 5432,
   user: 'chatuser',
   password: 'chatpassword',

@@ -5,6 +5,8 @@ const express = require('express');
 const socketio = require('socket.io');
 const http = require('http');
 const cors = require('cors');
+const redisUrl =
+  process.env.REDIS_URL || 'redis://localhost:6379';
 
 const {
   connectUserStore,
@@ -34,7 +36,8 @@ app.use(router);
 
 // Redis clients used by Socket.IO for cross-server messaging
 const pubClient = createClient({
-  url: 'redis://localhost:6379',
+  
+  url: redisUrl,
 });
 
 const subClient = pubClient.duplicate();
