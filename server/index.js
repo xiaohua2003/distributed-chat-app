@@ -14,6 +14,13 @@ const {
   getUsersInRoom,
 } = require('./users.js');
 
+const {
+  initializeDatabase,
+  saveMessage,
+  getRecentMessages,
+} = require('./db.js');
+
+
 const router = require('./router');
 
 const PORT = process.env.PORT || 5000;
@@ -58,6 +65,22 @@ io.on('connection', (socket) => {
 
       socket.join(user.room);
 
+      socket.join(user.room);
+
+      const history = await getRecentMessages(user.room);
+
+      history.forEach((item) => {
+        socket.emit('message', {
+          user: item.username,
+          text: item.message,
+        });
+      });
+
+      socket.emit('message', {
+        user: 'admin',
+        text: `${user.name}, welcome to room ${user.room}`,
+      });
+
       // Welcome the user who just joined
       socket.emit('message', {
         user: 'admin',
@@ -86,32 +109,38 @@ io.on('connection', (socket) => {
   });
 
   // User-generated message
-  socket.on('sendMessage', async (message, callback) => {
-    try {
-      const user = await getUser(socket.id);
+socket.on('sendMessage', async (message, callback) => {
+  try {
+    const user = await getUser(socket.id);
 
-      if (!user) {
-        return callback();
-      }
-
-      io.to(user.room).emit('message', {
-        user: user.name,
-        text: message,
-      });
-
-      const users = await getUsersInRoom(user.room);
-
-      io.to(user.room).emit('roomData', {
-        room: user.room,
-        users,
-      });
-
-      callback();
-    } catch (err) {
-      console.error('Send message error:', err);
-      callback();
+    if (!user) {
+      return callback();
     }
-  });
+
+    await saveMessage({
+      room: user.room,
+      username: user.name,
+      message,
+    });
+
+    io.to(user.room).emit('message', {
+      user: user.name,
+      text: message,
+    });
+
+    const users = await getUsersInRoom(user.room);
+
+    io.to(user.room).emit('roomData', {
+      room: user.room,
+      users,
+    });
+
+    callback();
+  } catch (err) {
+    console.error('Send message error:', err);
+    callback();
+  }
+});
 
   // User disconnects
   socket.on('disconnect', async () => {
@@ -144,6 +173,7 @@ const startServer = async () => {
     pubClient.connect(),
     subClient.connect(),
     connectUserStore(),
+    initializeDatabase(),
   ]);
 
   // Allows Socket.IO events to propagate across server instances

@@ -37,14 +37,26 @@ const Chat=({location})=>{
         
     }, [ENDPOINT, location.search])
     //handling message
-    useEffect(()=>{
-        socket.on('message', (message)=>{
-            setMessages([...messages,message]);
-        });
-        socket.on("roomData", ({ users }) => {
-            setUsers(users);
-          });
-    }, [messages]);
+  useEffect(() => {
+   const handleMessage = (message) => {
+    setMessages((previousMessages) => [
+    ...previousMessages,
+    message,
+    ]);
+  };
+
+  const handleRoomData = ({ users }) => {
+    setUsers(users);
+  };
+
+  socket.on('message', handleMessage);
+  socket.on('roomData', handleRoomData);
+
+  return () => {
+    socket.off('message', handleMessage);
+    socket.off('roomData', handleRoomData);
+  };
+}, []);
     //function for sending messages
     const sendMessage=(event)=>{
         event.preventDefault();
