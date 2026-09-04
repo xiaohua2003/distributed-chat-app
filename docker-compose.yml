@@ -29,6 +29,18 @@ services:
     depends_on:
       - redis
       - postgres
+  chat-server-2:
+    build: ./server
+    container_name: chat-server-2
+    environment:
+      PORT: 5000
+      REDIS_URL: redis://redis:6379
+      POSTGRES_HOST: postgres
+    ports:
+      - "5001:5000"
+    depends_on:
+      - redis
+      - postgres
 
 volumes:
   chat-postgres-data:
