@@ -55,6 +55,7 @@ io.on('connection', (socket) => {
 
   // User joins a room
   socket.on('join', async ({ name, room }, callback) => {
+      console.log('JOIN EVENT:', socket.id, name, room);
     try {
       const { error, user } = await addUser({
         id: socket.id,
