@@ -2,7 +2,7 @@
 
 A horizontally scalable real-time messaging application built with **React, Node.js, Socket.IO, Redis, PostgreSQL, Docker, and Nginx**.
 
-This project extends a traditional single-server chat application into a distributed architecture with multiple backend instances, shared state, cross-server message delivery, persistent message history, load balancing, load testing, and backend failure testing.
+This project is a distributed-system redesign of a single-server real-time chat application I originally built about 5 years ago. The new architecture adds horizontally scaled backend instances, Redis-backed shared state and Pub/Sub, PostgreSQL persistence, Nginx load balancing, Docker, load testing, and backend failure testing.
 
 ---
 
