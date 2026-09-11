@@ -1,8 +1,8 @@
 # Distributed Real-Time Chat Application
 
-A horizontally scalable real-time messaging application built with **React, Node.js, Socket.IO, Redis, PostgreSQL, Docker, and Nginx**.
+A horizontally scalable real-time messaging application built with **React, Vite, Node.js, Socket.IO, Redis, PostgreSQL, Docker, and Nginx**.
 
-This project is a distributed-system redesign of a single-server real-time chat application I originally built about 5 years ago. The new architecture adds horizontally scaled backend instances, Redis-backed shared state and Pub/Sub, PostgreSQL persistence, Nginx load balancing, Docker, load testing, and backend failure testing.
+This project is a distributed-system redesign of a single-server real-time chat application I originally built about 5 years ago. The new architecture introduces horizontally scaled backend instances, Redis-backed shared state and Pub/Sub, PostgreSQL persistence, Nginx load balancing, full-stack Docker containerization, concurrent load testing, and backend failure testing.
 
 ---
 
@@ -67,7 +67,7 @@ PostgreSQL stores chat messages so users can retrieve recent message history whe
 - Redis-backed shared room and user presence state
 - PostgreSQL message persistence
 - Message history retrieval when joining a room
-- Dockerized backend infrastructure
+- Fully containerized frontend and backend infrastructure with Docker Compose
 - Automated concurrent-client load testing
 - Backend failure and availability testing
 
@@ -78,6 +78,7 @@ PostgreSQL stores chat messages so users can retrieve recent message history whe
 ### Frontend
 
 - React
+- Vite
 - Socket.IO Client
 
 ### Backend
@@ -297,69 +298,57 @@ This verifies that the application does not depend on a single Node.js backend i
 Install:
 
 - Docker Desktop
-- Node.js
-- npm
+- Docker Compose
 
----
+### 1. Clone the Repository
 
-### 1. Start the Backend Infrastructure
+```bash
+git clone https://github.com/xiaohua2003/distributed-chat-app.git
+cd distributed-chat-app
+```
 
-From the project root:
+### 2. Start the Complete Application
+
+Build and start all services from the project root:
 
 ```bash
 docker compose up -d --build
 ```
 
-Check that the services are running:
+This starts the complete application stack:
+
+```text
+chat-client
+chat-nginx
+chat-server-1
+chat-server-2
+chat-redis
+chat-postgres
+```
+
+Check that all services are running:
 
 ```bash
 docker compose ps
 ```
 
-The stack includes:
+### 3. Open the Application
 
-```text
-chat-server-1
-chat-server-2
-chat-nginx
-chat-redis
-chat-postgres
-```
-
----
-
-### 2. Start the React Client
-
-Open another terminal:
-
-```bash
-cd client
-npm install
-npm start
-```
-
-For newer Node.js versions, the older Create React App configuration may require the following command in Windows PowerShell:
-
-```powershell
-$env:NODE_OPTIONS="--openssl-legacy-provider"
-npm start
-```
-
-The frontend runs at:
+Open the frontend at:
 
 ```text
 http://localhost:3000
 ```
 
-The React client connects to the backend through Nginx at:
+The client communicates with the backend through the Nginx load balancer at:
 
 ```text
 http://localhost:8080
 ```
 
----
+No separate Node.js or frontend startup command is required because the React/Vite client is included in Docker Compose.
 
-### 3. Test Multiple Users
+### 4. Test Multiple Users
 
 Open multiple browser windows using different names but the same room:
 
@@ -371,7 +360,15 @@ http://localhost:3000/chat?name=user1&room=test
 http://localhost:3000/chat?name=user2&room=test
 ```
 
-Users can be routed to different backend servers while continuing to communicate through Redis Pub/Sub.
+Nginx can route the users to different Socket.IO backend instances while Redis Pub/Sub enables real-time communication between them.
+
+### 5. Stop the Application
+
+```bash
+docker compose down
+```
+
+PostgreSQL data persists in a Docker named volume across normal container recreation.
 
 ---
 
