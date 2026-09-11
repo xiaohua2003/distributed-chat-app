@@ -52,5 +52,15 @@ services:
       - chat-server-1
       - chat-server-2
 
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: chat-client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - nginx
+
 volumes:
   chat-postgres-data:
