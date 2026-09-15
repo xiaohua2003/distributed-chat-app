@@ -69,8 +69,6 @@ io.on('connection', (socket) => {
 
       socket.join(user.room);
 
-      socket.join(user.room);
-
       const history = await getRecentMessages(user.room);
 
       history.forEach((item) => {
@@ -78,11 +76,6 @@ io.on('connection', (socket) => {
           user: item.username,
           text: item.message,
         });
-      });
-
-      socket.emit('message', {
-        user: 'admin',
-        text: `${user.name}, welcome to room ${user.room}`,
       });
 
       // Welcome the user who just joined
