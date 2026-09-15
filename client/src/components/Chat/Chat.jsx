@@ -13,14 +13,13 @@ const Chat=({location})=>{
     const [message, setMessage]=useState('');
     const [users, setUsers] = useState('');
     const [messages, setMessages]=useState([]);
-    const ENDPOINT = 'http://localhost:5000';
     
     useEffect(()=>{
        const { name, room } = queryString.parse(
   location.search
 ); 
-        const endpoint = "http://localhost:8080";
-        socket = io(endpoint, {transports: ['websocket', 'polling', 'flashsocket']})
+        const endpoint = window.location.origin;
+        socket = io(endpoint, {transports: ['websocket', 'polling']})
         setName(name);
         setRoom(room);
        
@@ -35,7 +34,7 @@ const Chat=({location})=>{
         } 
 
         
-    }, [ENDPOINT, location.search])
+    }, [location.search])
     //handling message
   useEffect(() => {
    const handleMessage = (message) => {
