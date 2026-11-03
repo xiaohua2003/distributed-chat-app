@@ -19,7 +19,7 @@ const Chat=({location})=>{
   location.search
 ); 
         const endpoint = window.location.origin;
-        socket = io(endpoint, {transports: ['websocket', 'polling']})
+        socket = io(endpoint, {transports: ['websocket']})
         setName(name);
         setRoom(room);
        

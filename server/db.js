@@ -4,7 +4,7 @@ const pool = new Pool({
   host: process.env.POSTGRES_HOST || 'localhost', 
   port: 5432,
   user: 'chatuser',
-  password: 'chatpassword',
+  password: process.env.POSTGRES_PASSWORD,
   database: 'chatdb',
 });
 
